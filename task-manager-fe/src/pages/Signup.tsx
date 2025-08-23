@@ -1,10 +1,12 @@
 import {useCallback, useEffect, useState} from "react";
-import { signupSchema } from "@/validationSchemas/signupSchema.ts";
+import {signupSchema} from "@/validationSchemas/signupSchema.ts";
 import {toast, Toaster} from "react-hot-toast";
+import {signUp} from "@/services/auth.service.ts";
 
 function Signup() {
 
   // --------------------- States ---------------------
+  const [loading, setLoading] = useState(false);
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -18,7 +20,7 @@ function Signup() {
   });
 
   // --------------------- Functions ---------------------
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setTouched(() => ({
       fullName: true,
@@ -31,7 +33,20 @@ function Signup() {
       toast.error("Signup form has errors.");
       return;
     }
-    toast.success('Submitted successfully!');
+
+    // form is valid, proceed with submission logic
+    setLoading(true);
+    const result = await signUp({ fullName, email, password, confirmPassword });
+
+    if (result.errors && result.errors.length > 0) {
+      toast.error(result.message);
+      toast.error(result.errors.join(', '));
+    } else {
+      toast.success(result.message || 'Signup successful!');
+    }
+
+    setLoading(false);
+
   };
 
   // --------------------- Hooks ---------------------
@@ -68,7 +83,7 @@ function Signup() {
       <Toaster position="top-right" />
 
       <form
-        onSubmit={handleSubmit}
+        onSubmit={(e) => void handleSubmit(e)}
         className="bg-neutral-900 p-8 rounded-2xl shadow-md w-96"
       >
         <h2 className="text-2xl font-bold mb-6">Sign Up</h2>
@@ -124,8 +139,9 @@ function Signup() {
         <button
           type="submit"
           className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition"
+          disabled={loading}
         >
-          Sign Up
+          {loading ? 'Signing up...' : 'Sign Up'}
         </button>
       </form>
     </div>
