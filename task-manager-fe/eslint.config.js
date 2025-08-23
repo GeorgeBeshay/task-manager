@@ -37,5 +37,13 @@ export default tseslint.config([
           tsconfigRootDir: import.meta.dirname,
       },
     },
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: ['./*', '../*'],
+        },
+      ],
+    },
   },
 ])
