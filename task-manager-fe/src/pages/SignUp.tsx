@@ -2,8 +2,9 @@ import {useCallback, useEffect, useState} from "react";
 import {signupSchema} from "@/validationSchemas/signupSchema.ts";
 import {toast, Toaster} from "react-hot-toast";
 import {signUp} from "@/services/auth.service.ts";
+import {useNavigate} from "react-router-dom";
 
-function Signup() {
+function SignUp() {
 
   // --------------------- States ---------------------
   const [loading, setLoading] = useState(false);
@@ -20,6 +21,8 @@ function Signup() {
   });
 
   // --------------------- Functions ---------------------
+  const navigate = useNavigate();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setTouched(() => ({
@@ -30,23 +33,26 @@ function Signup() {
     }))
 
     if (!validateForm()) {
-      toast.error("Signup form has errors.");
+      toast.error("Sign Up form has errors.");
       return;
     }
 
     // form is valid, proceed with submission logic
     setLoading(true);
     const result = await signUp({ fullName, email, password, confirmPassword });
-
-    if (result.errors && result.errors.length > 0) {
-      toast.error(result.message);
-      toast.error(result.errors.join(', '));
-    } else {
-      toast.success(result.message || 'Signup successful!');
-    }
-
     setLoading(false);
 
+    if (result.errors || !result.access_token ) {
+      toast.error(result.message);
+      if (result.errors) {
+        toast.error(result.errors.join(', '));
+      }
+    } else {
+      toast.success(result.message || 'Account created successfully!');
+      localStorage.setItem('user', JSON.stringify(result.user));
+      localStorage.setItem('access_token', result.access_token)
+      void navigate('/dashboard');
+    }
   };
 
   // --------------------- Hooks ---------------------
@@ -56,7 +62,6 @@ function Signup() {
 
     if (error) {
       const validationErrors: Record<string, string> = {};
-      console.log(`Validation errors:`, error.details);
       error.details.forEach((detail) => {
         if (detail.path[0]) {
           validationErrors[detail.path[0].toString()] = detail.message;
@@ -81,6 +86,13 @@ function Signup() {
     <div className="h-screen flex flex-col items-center justify-center">
 
       <Toaster position="top-right" />
+
+      <div className="flex flex-col p-4 mb-8">
+        <h1 className="text-3xl italic mb-6 -mt-30">
+          <span className='font-bold'>Sch</span>edy
+        </h1>
+        <p className="text-lg mb-2">Welcome to Schedy, your personal task manager.</p>
+      </div>
 
       <form
         onSubmit={(e) => void handleSubmit(e)}
@@ -148,4 +160,4 @@ function Signup() {
   );
 }
 
-export default Signup;
+export default SignUp;
