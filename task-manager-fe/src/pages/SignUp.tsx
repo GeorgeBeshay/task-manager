@@ -1,6 +1,6 @@
 import {use, useCallback, useEffect, useState} from "react";
 import {signupSchema} from "@/validationSchemas/signupSchema.ts";
-import {toast, Toaster} from "react-hot-toast";
+import {toast} from "react-hot-toast";
 import {signUp} from "@/services/auth.service.ts";
 import {useNavigate} from "react-router-dom";
 import {setItemWithExpiry} from "@/utils/storage.ts";
@@ -96,8 +96,6 @@ function SignUp() {
   // --------------------- JSX ---------------------
   return (
     <div className="flex flex-col items-center">
-
-      <Toaster position="top-right" />
 
       <div className="flex flex-col p-4 mb-8">
         <h1 className="text-3xl italic mb-6">

@@ -34,7 +34,6 @@ export class TasksController {
     @Req() req: RequestWithUser,
     @Body() body: { title: string; description: string },
   ) {
-    console.log(req.user);
     return this.tasksService.createTask(
       body.title,
       body.description,
@@ -44,8 +43,6 @@ export class TasksController {
 
   @Get(':id')
   async getTask(@Req() req: RequestWithUser, @Param('id') id: number) {
-    console.log(req.user);
-    console.log(id);
     return this.tasksService.findTaskOfUser(id, req.user['id']);
   }
 
