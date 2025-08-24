@@ -1,10 +1,15 @@
-import {useCallback, useEffect, useState} from "react";
+import {use, useCallback, useEffect, useState} from "react";
 import {signupSchema} from "@/validationSchemas/signupSchema.ts";
 import {toast, Toaster} from "react-hot-toast";
 import {signUp} from "@/services/auth.service.ts";
 import {useNavigate} from "react-router-dom";
+import {setItemWithExpiry} from "@/utils/storage.ts";
+import {AuthContext} from "@/context/AuthContext.tsx";
+import AlreadySignedIn from "@/components/AlreadySignedIn.tsx";
 
 function SignUp() {
+  // --------------------- Context ---------------------
+  const authContext = use(AuthContext);
 
   // --------------------- States ---------------------
   const [loading, setLoading] = useState(false);
@@ -47,12 +52,19 @@ function SignUp() {
       if (result.errors) {
         toast.error(result.errors.join(', '));
       }
-    } else {
-      toast.success(result.message || 'Account created successfully!');
-      localStorage.setItem('user', JSON.stringify(result.user));
-      localStorage.setItem('access_token', result.access_token)
-      void navigate('/dashboard');
+      return;
     }
+
+    // Signed up successfully
+    toast.success(result.message || 'Account created successfully!');
+
+    setItemWithExpiry('user', JSON.stringify(result.user));
+    setItemWithExpiry('access_token', result.access_token);
+
+    authContext.setUser(result.user);
+    authContext.setAccessToken(result.access_token);
+
+    void navigate('/dashboard');
   };
 
   // --------------------- Hooks ---------------------
@@ -83,16 +95,18 @@ function SignUp() {
 
   // --------------------- JSX ---------------------
   return (
-    <div className="h-screen flex flex-col items-center justify-center">
+    <div className="flex flex-col items-center">
 
       <Toaster position="top-right" />
 
       <div className="flex flex-col p-4 mb-8">
-        <h1 className="text-3xl italic mb-6 -mt-30">
+        <h1 className="text-3xl italic mb-6">
           <span className='font-bold'>Sch</span>edy
         </h1>
         <p className="text-lg mb-2">Welcome to Schedy, your personal task manager.</p>
       </div>
+
+      <AlreadySignedIn />
 
       <form
         onSubmit={(e) => void handleSubmit(e)}

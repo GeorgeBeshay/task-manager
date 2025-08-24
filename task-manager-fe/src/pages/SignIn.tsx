@@ -1,10 +1,17 @@
-import {useCallback, useEffect, useState} from 'react';
+import {use, useCallback, useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {toast, Toaster} from 'react-hot-toast';
 import {signInSchema} from "@/validationSchemas/signInSchema.ts";
 import {signIn} from "@/services/auth.service.ts";
+import AlreadySignedIn from "@/components/AlreadySignedIn.tsx";
+import {setItemWithExpiry} from "@/utils/storage.ts";
+import {AuthContext} from "@/context/AuthContext.tsx";
 
 const SignIn = () => {
+  // --------------------- Context ---------------------
+  const authContext = use(AuthContext);
+
+  // --------------------- States ---------------------
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({email: '', password: ''});
@@ -32,12 +39,19 @@ const SignIn = () => {
       if (result.errors) {
         toast.error(result.errors.join(', '));
       }
-    } else {
-      toast.success(result.message || 'Logged in successfully!');
-      localStorage.setItem('user', JSON.stringify(result.user));
-      localStorage.setItem('access_token', result.access_token)
-      void navigate('/dashboard');
+      return;
     }
+
+    // Logged in successfully
+    toast.success(result.message || 'Logged in successfully!');
+
+    setItemWithExpiry('user', JSON.stringify(result.user));
+    setItemWithExpiry('access_token', result.access_token);
+
+    authContext.setUser(result.user);
+    authContext.setAccessToken(result.access_token);
+
+    void navigate('/dashboard');
 
   };
 
@@ -69,7 +83,7 @@ const SignIn = () => {
 
   // --------------------- JSX ---------------------
   return (
-    <div className="h-screen flex flex-col items-center justify-center">
+    <div className="flex flex-col items-center">
 
       <Toaster position="top-right" />
 
@@ -79,6 +93,8 @@ const SignIn = () => {
         </h1>
         <p className="text-lg mb-2">Welcome to Schedy, your personal task manager.</p>
       </div>
+
+      <AlreadySignedIn />
 
       <form
         onSubmit={(e) => void handleSubmit(e)}
