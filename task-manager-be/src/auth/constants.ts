@@ -1,0 +1,5 @@
+export const jwtConstants = {
+  secret:
+    "THIS IS SUPPOSED TO BE A SECRET KEY THAT'S KEPT OUTSIDE OF THE SOURCE CODE. " +
+    'DO NOT USE THIS VALUE IN PRODUCTION.',
+};
