@@ -10,6 +10,7 @@ import { jwtConstants } from './constants';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../common/models/user.entity';
 import { JwtStrategy } from './jwt.strategy';
+import { Task } from '../common/models/task.entity';
 
 @Module({
   imports: [
@@ -20,7 +21,7 @@ import { JwtStrategy } from './jwt.strategy';
       secret: jwtConstants.secret,
       signOptions: { expiresIn: '1h' }, // 1 hour expiration
     }),
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, Task]),
   ],
   exports: [AuthService],
   controllers: [AuthController],

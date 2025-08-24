@@ -14,16 +14,14 @@ import { Task } from './common/models/task.entity';
     CommonModule,
     TasksModule,
     TypeOrmModule.forRoot({
-      type: 'sqlite',
-      database: ':memory:', // in-memory database
+      type: 'mysql',
+      host: 'localhost',
+      port: 3307, // updated port
+      username: 'nestuser',
+      password: 'nestpass',
+      database: 'tasks_db',
       entities: [User, Task],
-      synchronize: true, // auto-create schema
-      // type: 'mysql',
-      // host: 'localhost',
-      // port: 3306,
-      // username: 'root',
-      // password: 'yourpassword',
-      // database: 'tasks_db',
+      synchronize: true,
     }),
   ],
   controllers: [],
