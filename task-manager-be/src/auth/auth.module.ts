@@ -7,6 +7,9 @@ import { ValidatorService } from './validator.service';
 import { UsersService } from '../users/users.service';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './constants';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from '../common/models/user.entity';
+import { JwtStrategy } from './jwt.strategy';
 
 @Module({
   imports: [
@@ -17,9 +20,10 @@ import { jwtConstants } from './constants';
       secret: jwtConstants.secret,
       signOptions: { expiresIn: '1h' }, // 1 hour expiration
     }),
+    TypeOrmModule.forFeature([User]),
   ],
   exports: [AuthService],
   controllers: [AuthController],
-  providers: [AuthService, ValidatorService, UsersService],
+  providers: [AuthService, ValidatorService, UsersService, JwtStrategy],
 })
 export class AuthModule {}

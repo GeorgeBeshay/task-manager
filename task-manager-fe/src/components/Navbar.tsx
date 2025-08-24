@@ -46,7 +46,7 @@ export function Navbar() {
       <div className="flex items-center space-x-4">
         {isLoggedIn ? (
           <>
-            <span className="text-sm text-gray-200">{user?.fullName}</span>
+            <span className="text-sm text-gray-200">Welcome, {user?.fullName}</span>
             <Link
               to="/dashboard"
               className="px-3 py-1 rounded border hover:bg-gray-100 transition"
