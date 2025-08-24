@@ -7,8 +7,11 @@ import { UsersService } from '../users/users.service';
 export class ValidatorService {
   constructor(private readonly usersService: UsersService) {}
 
-  validateSignUp(data: SignUpDto): { isValid: boolean; errors?: string[] } {
-    if (this.usersService.findByEmail(data.email)) {
+  async validateSignUp(
+    data: SignUpDto,
+  ): Promise<{ isValid: boolean; errors?: string[] }> {
+    const user = await this.usersService.findByEmail(data.email);
+    if (user) {
       return { isValid: false, errors: ['Email already in use'] };
     }
 

@@ -7,6 +7,7 @@ import ProtectedRoute from "@/components/ProtectedRoute.tsx";
 import DashboardPage from "@/pages/Dashboard.tsx";
 import NotFoundPage from "@/pages/NoutFound.tsx";
 import {AuthProvider} from "@/context/AuthContext.tsx";
+import {Toaster} from "react-hot-toast";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
       <BrowserRouter>
         <div>
           <Navbar />
+          <Toaster position="top-right" />
           <div>
             <Routes>
               <Route path="/" element={<HomePage />} />
